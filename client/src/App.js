@@ -1,10 +1,13 @@
 import { useState } from "react";
+import axios from "axios";
 
 function App() {
   const [keyWords, SetKeyWords] = useState();
 
   const handleClick = () => {
-    console.log(keyWords);
+    axios.get(`/scan/${keyWords}`).then((data) => {
+      console.log(data.data);
+    });
   };
 
   return (
