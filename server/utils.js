@@ -18,7 +18,11 @@ const openPuppeteer = async (req, res, next) => {
   await page.goto("http://nzxj65x32vh2fkhk.onion/all");
   req.content = await page.content();
   req.browser = browser;
-  next();
+  if (res) {
+    next();
+  } else {
+    return req;
+  }
 };
 
 const updateDB = (postArr, res) => {
@@ -37,11 +41,13 @@ const updateDB = (postArr, res) => {
 
         newPost.save().catch((err) => {
           console.log(err.message);
-          res.status(500).send({ error: err.message });
+          if (res) {
+            res.status(500).send({ error: err.message });
+          }
         });
       }
     });
   });
 };
 
-module.exports = { openPuppeteer, updateDB };
+module.exports = { openPuppeteer, updateDB, BadPost };
