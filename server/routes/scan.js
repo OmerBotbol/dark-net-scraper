@@ -1,10 +1,16 @@
 const express = require("express");
 const scan = express();
-const { BadPost } = require("../utils");
+const { BadPost, createDB } = require("../utils");
 
 scan.get("/scan", (req, res) => {
   BadPost.find().then((result) => {
-    res.send(result);
+    if (result.length === 0) {
+      createDB().then((posts) => {
+        res.send(posts);
+      });
+    } else {
+      res.send(result);
+    }
   });
 });
 
