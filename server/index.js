@@ -4,11 +4,9 @@ const puppeteer = require("puppeteer");
 const cheerio = require("cheerio");
 const PORT = 3001;
 
-app.get("/scan/:keyWord", async (req, res) => {
-  const { keyWord } = req.params;
-  console.log(keyWord);
+app.get("/scan", async (req, res) => {
   const browser = await puppeteer.launch({
-    headless: false,
+    // headless: false,
     args: ["--proxy-server=socks5://127.0.0.1:9050"],
   });
   const page = await browser.newPage();
@@ -18,11 +16,17 @@ app.get("/scan/:keyWord", async (req, res) => {
   const badPosts = [];
 
   $("h4").each((idx, elem) => {
-    const title = $(elem).text();
-    if (title.includes(keyWord)) {
-      badPosts.push(title);
-    }
+    const badPost = { title: $(elem).text().slice(14).slice(0, -12) };
+    badPosts.push(badPost);
   });
+  $("div[class=col-sm-6]:not(.text-right)").each((idx, elem) => {
+    badPosts[idx].author = $(elem).text().slice(21).slice(0, -34);
+    badPosts[idx].date = $(elem).text().slice(34).slice(0, -9);
+  });
+  $("ol").each((idx, elem) => {
+    badPosts[idx].content = $(elem).children().text().replace(/\s\s+/g, " ");
+  });
+
   res.send(badPosts);
 
   setTimeout(() => {

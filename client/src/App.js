@@ -1,24 +1,31 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import PostLine from "./components/PostLine";
 
 function App() {
-  const [keyWords, SetKeyWords] = useState();
+  const [badPosts, setBadPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = () => {
-    axios.get(`/scan/${keyWords}`).then((data) => {
-      console.log(data.data);
+  useEffect(() => {
+    setIsLoading(true);
+    axios.get("/scan").then((data) => {
+      setIsLoading(false);
+      setBadPosts(data.data);
     });
-  };
+  }, []);
 
   return (
     <div className="App">
       <h1>Dark Net Scraper</h1>
-      <input
-        type="text"
-        placeholder="Enter your key words here"
-        onChange={(e) => SetKeyWords(e.target.value)}
-      />
-      <button onClick={() => handleClick()}>Scan</button>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <ol>
+          {badPosts.map((post, i) => {
+            return <PostLine post={post} key={i} />;
+          })}
+        </ol>
+      )}
     </div>
   );
 }
