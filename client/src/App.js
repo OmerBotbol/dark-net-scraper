@@ -8,7 +8,7 @@ function App() {
 
   const scanForPosts = () => {
     setIsLoading(true);
-    axios.get("/scan").then((result) => {
+    axios.get("/api/scan").then((result) => {
       setIsLoading(false);
       setBadPosts(result.data);
     });
@@ -18,9 +18,13 @@ function App() {
   }, []);
 
   setInterval(() => {
-    axios.get("/check").then((result) => {
-      if (result.data.isNew) {
-        scanForPosts();
+    axios.get("/api/scan").then((result) => {
+      const newBadPosts = result.data;
+      if (
+        newBadPosts[0].title !== badPosts[0].title &&
+        newBadPosts[0].date !== badPosts[0].date
+      ) {
+        setBadPosts(newBadPosts);
       }
     });
   }, 120000);
