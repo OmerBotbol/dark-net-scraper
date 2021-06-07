@@ -6,13 +6,24 @@ function App() {
   const [badPosts, setBadPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
+  const scanForPosts = () => {
     setIsLoading(true);
-    axios.get("/scan").then((data) => {
+    axios.get("/scan").then((result) => {
       setIsLoading(false);
-      setBadPosts(data.data);
+      setBadPosts(result.data);
     });
+  };
+  useEffect(() => {
+    scanForPosts();
   }, []);
+
+  setInterval(() => {
+    axios.get("/check").then((result) => {
+      if (result.data.isNew) {
+        scanForPosts();
+      }
+    });
+  }, 120000);
 
   return (
     <div className="App">
