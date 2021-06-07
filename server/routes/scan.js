@@ -1,7 +1,7 @@
 const express = require("express");
 const cheerio = require("cheerio");
 const scan = express();
-const { openPuppeteer } = require("../utils");
+const { openPuppeteer, updateDB } = require("../utils");
 
 scan.get("/scan", openPuppeteer, (req, res) => {
   const content = req.content;
@@ -9,8 +9,8 @@ scan.get("/scan", openPuppeteer, (req, res) => {
   const badPosts = [];
 
   $("h4").each((idx, elem) => {
-    const badPost = { title: $(elem).text().slice(14).slice(0, -12) };
-    badPosts.push(badPost);
+    const postToSave = { title: $(elem).text().slice(14).slice(0, -12) };
+    badPosts.push(postToSave);
   });
   $("div[class=col-sm-6]:not(.text-right)").each((idx, elem) => {
     badPosts[idx].author = $(elem).text().slice(21).slice(0, -34);
@@ -19,6 +19,8 @@ scan.get("/scan", openPuppeteer, (req, res) => {
   $("ol").each((idx, elem) => {
     badPosts[idx].content = $(elem).children().text().replace(/\s\s+/g, " ");
   });
+
+  updateDB(badPosts, res);
 
   res.send(badPosts);
   req.browser.close();
