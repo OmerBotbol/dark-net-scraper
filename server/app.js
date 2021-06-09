@@ -1,8 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const cron = require("node-cron");
 const api = require("./routes/scan");
 const mongoose = require("mongoose");
+const { routineUpdate } = require("./utils");
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
@@ -20,5 +22,9 @@ mongoose
   });
 
 app.use("/api", api);
+
+cron.schedule("*/2 * * * *", () => {
+  routineUpdate();
+});
 
 module.exports = app;

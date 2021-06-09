@@ -4,30 +4,24 @@ import PostLine from "./components/PostLine";
 
 function App() {
   const [badPosts, setBadPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const scanForPosts = () => {
+    console.log("start scan");
     setIsLoading(true);
     axios.get("/api/scan").then((result) => {
-      setIsLoading(false);
+      console.log("finish scan");
       setBadPosts(result.data);
+      setIsLoading(false);
     });
   };
+
   useEffect(() => {
     scanForPosts();
+    setInterval(() => {
+      scanForPosts();
+    }, 120000);
   }, []);
-
-  setInterval(() => {
-    axios.get("/api/scan").then((result) => {
-      const newBadPosts = result.data;
-      if (
-        newBadPosts[0].title !== badPosts[0].title &&
-        newBadPosts[0].date !== badPosts[0].date
-      ) {
-        setBadPosts(newBadPosts);
-      }
-    });
-  }, 120000);
 
   return (
     <div className="App">
