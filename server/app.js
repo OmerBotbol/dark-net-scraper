@@ -1,10 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const cron = require("node-cron");
 const api = require("./routes/scan");
 const mongoose = require("mongoose");
-const { createDB } = require("./utils");
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
@@ -20,10 +18,6 @@ mongoose
   .catch((error) => {
     console.log("error connecting to MongoDB:", error.message);
   });
-
-cron.schedule("*/2 * * * *", async () => {
-  createDB();
-});
 
 app.use("/api", api);
 
