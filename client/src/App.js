@@ -11,7 +11,10 @@ function App() {
     setIsLoading(true);
     axios.get("/api/scan").then((result) => {
       console.log("finish scan");
-      setBadPosts(result.data);
+      const orderedPosts = result.data.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setBadPosts(orderedPosts);
       setIsLoading(false);
     });
   };

@@ -10,11 +10,15 @@ const postSchema = new mongoose.Schema({
 });
 const BadPost = mongoose.model("badPost", postSchema);
 
-const routineUpdate = async () => {
+const routineUpdate = async (returnData) => {
   console.log("start update");
   const browser = await puppeteer.launch({
     // headless: false,
-    args: ["--proxy-server=socks5://127.0.0.1:9050"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--proxy-server=socks5://host.docker.internal:9050",
+    ],
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);
@@ -37,6 +41,9 @@ const routineUpdate = async () => {
   });
   await updateDB(badPosts);
   console.log("finish update");
+  if (returnData) {
+    return content;
+  }
 };
 
 const updateDB = async (postArr) => {
