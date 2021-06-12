@@ -9,7 +9,7 @@ function App() {
   const scanForPosts = () => {
     console.log("start scan");
     setIsLoading(true);
-    axios.get("/api/scan").then((result) => {
+    axios.get("http://localhost:3001/api/scan").then((result) => {
       console.log("finish scan");
       const orderedPosts = result.data.sort(
         (a, b) => new Date(b.date) - new Date(a.date)

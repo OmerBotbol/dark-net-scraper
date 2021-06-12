@@ -20,7 +20,6 @@ mongoose
   .catch((error) => {
     console.log("error connecting to MongoDB:", error.message);
   });
-
 app.use("/api", api);
 
 cron.schedule("*/2 * * * *", () => {
